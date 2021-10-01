@@ -4,8 +4,8 @@ const Projects = require("./projects-router")
 async function validateProjectId (req, res, next) {
     try {
         const project = await Projects.get(req.params.id)
-        if(project) {
-            next({ status: 404, message: 'project not found'})
+        if(!project) {
+            res.status(404).json({ message: 'project not found'})
         }
         else {
             req.project = project
@@ -18,7 +18,7 @@ async function validateProjectId (req, res, next) {
     }
 }
 
-async function validatePost (req, res, next) {
+async function validateProject (req, res, next) {
     const { name } = req.body
     if(!name || !name.trim()) {
         res.status(400).json({
@@ -30,7 +30,21 @@ async function validatePost (req, res, next) {
     }
 }
 
+async function validatePost (req, res, next) {
+    const { description } = req.body
+    if(!description || !description.trim()) {
+        res.status(400).json({
+            message: "missing description field"
+        })
+    } else {
+        req.description = description
+        req.post = { description }
+        next()
+    }
+}
+
 module.exports = {
     validateProjectId,
+    validateProject,
     validatePost
 }

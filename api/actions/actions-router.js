@@ -19,19 +19,25 @@ router.get('/', (req, res, next) => {
     .catch(next)
 })
 
-router.get('/:id', validateActionId, (req, res, next) => {
-    res.json(res.action)
+router.get('/:id', validateActionId, async (req, res, next) => {
+    try {
+        const action = await req.action
+        res.status(200).json(action)
+    }
+    catch (err) {
+        next(err)
+    }
 })
 
 router.post('/', validatePost, (req, res, next) => {
-    Action.insert({ description: req.description })
+    Action.insert( req.post )
     .then(newAction => {
         res.status(201).json(newAction)
     })
     .catch(next)
 })
 
-router.put('/:id', validateActionId, validateAction, (req, res, next) => {
+router.put('/:id', validateActionId, validateAction, (req, res) => {
     Action.update(req.params.id, { description: req.description })
     .then(() => {
         return Action.get(req.params.id)
@@ -39,7 +45,9 @@ router.put('/:id', validateActionId, validateAction, (req, res, next) => {
     .then(action => {
         res.json(action)
     })
-    .catch(next)
+    .catch(err => {
+        res.json(err)
+    })
 })
 
 router.delete('/:id', validateActionId, async (req, res, next) => {

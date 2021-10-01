@@ -5,8 +5,8 @@ const Actions = require("./actions-model.js")
 async function validateActionId (req, res, next) {
     try {
         const action = await Actions.get(req.params.id)
-        if (action) {
-            next({ status: 404, message: 'action not found' })
+        if (!action) {
+            res.status(404).json({message: 'action not found' })
         }
         else {
             req.action = action
@@ -32,13 +32,14 @@ async function validateAction (req, res, next) {
 }
 
 async function validatePost (req, res, next) {
-    const { description } = req.body
-    if(!description) {
+    const { description, project_id, notes } = req.body
+    if(!description || !project_id || !notes) {
         res.status(400).json({
-            message: "missing description field"
+            message: "missing fields"
         })
     } else {
         req.description = description
+        req.post = {description, project_id, notes}
         next()
     }
 }

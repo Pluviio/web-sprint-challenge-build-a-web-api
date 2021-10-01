@@ -9,7 +9,7 @@ const actionsRouter = require('./actions/actions-router')
 // Do NOT `server.listen()` inside this file!
 
 server.use(express.json())
-// server.use('/api/projects', projectsRouter)
+server.use('/api/projects', projectsRouter)
 server.use('/api/actions', actionsRouter)
 
 module.exports = server;
